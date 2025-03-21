@@ -12,6 +12,19 @@ export default function ChatMessage({
   error_message_style,
 }: ChatMessageType) {
 
+  // Encode image URLs and convert to Markdown format
+  const encodeAndConvertImageURLs = (text: string): string => {
+    return text.replace(/<img src="([^"]+)">/g, (match, url) => {
+      // Encode the URL using encodeURI
+      const encodedURL = encodeURI(url);
+
+      // Convert the encoded URL to Markdown format
+      return `![Image](${encodedURL})`;
+    });
+  };
+
+  const markdownMessage = encodeAndConvertImageURLs(message);
+
   return (
     <div
       className={
@@ -28,12 +41,12 @@ export default function ChatMessage({
         </div>
       ) : (
         <div style={bot_message_style} className={"cl-bot_message"}>
-          <Markdown 
-          className={"markdown-body prose flex flex-col word-break-break-word"}
-          remarkPlugins={[remarkGfm]}
+          <Markdown
+            className={"markdown-body prose flex flex-col word-break-break-word"}
+            remarkPlugins={[remarkGfm]}
             rehypePlugins={[rehypeMathjax]}
           >
-            {message}
+            {markdownMessage}
           </Markdown>
         </div>
       )}
